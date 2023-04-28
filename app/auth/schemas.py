@@ -12,22 +12,22 @@ T = TypeVar('T')
 
 
 class Types(Enum):
-    INT: int = 123
-    STR: str = '123'
-    BOOL: bool = True
-    FLOAT: float = 123.0
+    INT = int
+    STR = str
+    BOOL = bool
+    FLOAT = float
 
 
-class User(BaseModel):
+class UserModel(BaseModel):
 
     name: str = Field(max_length=50)
-    email: EmailStr = Field(max_length=50)
-    password: str = Field(max_length=150)
+    email: str = Field(max_length=50)
+    hashed_password: str = Field(max_length=150)
 
     @staticmethod
     def type_validation(attribute: T, name: str,
                         type_for_attribute: Types) -> None:
-        if not isinstance(attribute, type(type_for_attribute)):
+        if not isinstance(attribute, type_for_attribute.value):
             raise ValidationError(f'''{__class__}_pydantic_model:
                                     Input {name} it\'s not valid''')
 
@@ -61,10 +61,10 @@ class User(BaseModel):
 
         return value
 
-    @validator('password')
+    @validator('hashed_password')
     @classmethod
     def password_validator(cls, value) -> str:
-        cls.type_validation(value, 'password', Types.STR)
-        cls.len_validation(value, 'password', Types.STR)
+        cls.type_validation(value, 'hashed_password', Types.STR)
+        cls.len_validation(value, 'hashed_password', 150)
 
         return value
