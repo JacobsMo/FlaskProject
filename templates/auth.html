@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link>
+    <title>Авторизация</title>
+</head>
+<body>
+    <form action="" method="post">
+        <div>
+            <label for="email_input">email</label>
+            <input type="text" name="email" id="email_input">
+        </div>
+        <div>
+            <label for="password_input">password</label>
+            <input type="password" name="password" id="password_input">
+        </div>
+        <button>Авторизоваться</button>
+    </form>
+</body>
+<footer>
+    {% if content['flag'] %}
+        <div>
+            <h1>{{ content['status']['message'] }}</h1>
+        </div>
+    {% endif %}
+</footer>
+</html>

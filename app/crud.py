@@ -64,7 +64,6 @@ class AddingSessionUser(AddingSession):
             logger.info(f'class {__class__}; engine connection success!')
 
     def add(self, user: UserModel) -> None:
-        '''TODO Create checking data'''
         with self.__session() as session:
             try:
                 addable_user = User(name=user.name,
@@ -99,18 +98,29 @@ class GettingSessionUser(GettingSession):
         else:
             logger.info(f'class {__class__}; engine connection success!')
 
-    def get(self, email: str) -> UserModel.dict():
+    def get(self, email: str) -> UserModel | list[None]:
         with self.__session() as session:
             try:
-                response = session.query(User).filter(User.email == email).all()[0]
-                return UserModel(**{
-                    'name': response.name,
-                    'email': response.email,
-                    'hashed_password': response.hashed_password
-                }).dict()
+                response = session.query(User).\
+                    filter(User.email == email).all()
+                if response:
+                    response = response[0]
             except Exception as ex:
                 raise Exception(f'''class: {__class__};
                                 request failed: {ex}!''')
+            else:
+                if response:
+                    try:
+                        return UserModel(**{
+                            'name': response.name,
+                            'email': response.email,
+                            'hashed_password': response.hashed_password
+                        })
+                    except Exception as ex:
+                        raise ValueError(f'''Invalid data for the model;
+                                            Except: {ex}''')
+
+                return []
 
 
 class ModelCRUD(ABC):

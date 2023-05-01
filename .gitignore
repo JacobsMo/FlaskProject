@@ -1,0 +1,6 @@
+.env
+.idea/
+venv/
+**__pycache__
+loggs.log
+debug.py

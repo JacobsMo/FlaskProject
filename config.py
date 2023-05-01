@@ -38,3 +38,11 @@ class BaseConfig(object):
 class DatabaseConfig(BaseConfig):
 
     DEBUG: bool = True
+
+
+class ServerConfig(BaseConfig):
+
+    DEBUG: bool = True
+
+    HOST: str = os.getenv('HOST')
+    PORT: int = int(os.getenv('PORT'))
