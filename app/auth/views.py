@@ -150,10 +150,11 @@ def authentication(authentication_request: request) ->\
             return [ResponseAuthentication.not_registered, user_request]
 
     try:
-        if hash_manager.verify(user.dict().get['hashed_password'],
-                               authentication_request.form.get['password']):
+        if hash_manager.verify(user.dict().get('hashed_password'),
+                               authentication_request.form.get('password')):
             return [ResponseAuthentication.success, user_request]
-    except:
+    except Exception as ex:
         logger.debug(f'''Problem authentication user:
                     {user_request} in the password.''')
+        logger.error(f'''Verify erorr: {ex}!''')
         return [ResponseAuthentication.not_registered, user_request]

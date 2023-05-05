@@ -15,4 +15,7 @@ def init_database():
 
     from app.auth.models import User
 
+    from app.products.models import Type
+    from app.products.models import Product
+
     base.metadata.create_all(bind=engine)

@@ -46,3 +46,11 @@ class ServerConfig(BaseConfig):
 
     HOST: str = os.getenv('HOST')
     PORT: int = int(os.getenv('PORT'))
+
+
+class JsonWebTokenConfig(BaseConfig):
+
+    DEBUG: bool = True
+
+    SECRET_KEY: str = os.getenv('SECRET_KEY')
+    ALGORITHM: str = os.getenv('ALGORITHM')

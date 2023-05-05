@@ -7,7 +7,9 @@ from sqlalchemy.orm import sessionmaker
 
 from app.database import engine
 from app.auth.models import User
+from app.products.models import Product
 from app.auth.schemas import UserModel
+from app.products.schemas import ProductsModel
 
 
 logger = logging.getLogger(name=__name__)
@@ -66,13 +68,11 @@ class AddingSessionUser(AddingSession):
     def add(self, user: UserModel) -> None:
         with self.__session() as session:
             try:
-                addable_user = User(name=user.name,
-                                    email=user.email,
-                                    hashed_password=user.hashed_password)
+                addable_user = User(user.dict())
                 session.add(addable_user)
             except Exception as ex:
                 session.rollback()
-                raise Exception(f'''class: {__class__} exception because
+                raise Exception(f'''class: {__class__}; exception because
                                 added user error: {ex}''')
             else:
                 logger.info(f'class {__class__}; added user success!')
@@ -150,3 +150,53 @@ class UserCRUD(ModelCRUD):
     @staticmethod
     def get() -> GettingSession:
         return GettingSessionUser()
+
+
+class AddingSessionProduct(AddingSession):
+    __instance: AddingSession | None = None
+
+    def __new__(cls) -> AddingSession:
+        if not cls.__instance:
+            cls.__instance = super().__new__(cls)
+
+        return cls.__instance
+
+    def __init__(self) -> None:
+        try:
+            self.__session = sessionmaker(bind=engine)
+        except Exception as ex:
+            raise ConnectionError(f'''class: {__class__};
+                                    engine connection failed: {ex}''')
+
+        logger.info(f'''class: {__class__}; engine connection success!''')
+
+    def add(self, product: ProductsModel) -> None:
+        with self.__session() as session:
+            try:
+                product = Product(product.dict())
+                session.add(product)
+            except Exception as ex:
+                session.rollback()
+                raise Exception(f'''class: {__class__};
+                                added product error: {ex}!''')
+
+            logger.info(f'class {__class__}; added product: {product},\
+                        success!')
+            session.commit()
+
+
+class GettingSessionProduct(GettingSession):
+    pass
+
+
+class ProductCRUD(ModelCRUD):
+    def __init__(self) -> None:
+        pass
+
+    @staticmethod
+    def add() -> AddingSession:
+        return AddingSessionProduct()
+
+    @staticmethod
+    def get() -> GettingSession:
+        return GettingSessionProduct()
